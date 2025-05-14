@@ -4,7 +4,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
 const MIDTRANS_SERVER_KEY = process.env.SERVER_KEY;
@@ -100,3 +100,4 @@ app.post('/cancel-transaction', async (req, res) => {
 app.listen(port, () => {
     console.log(`✅ Midtrans QRIS backend running at http://localhost:${port}`);
 });
+

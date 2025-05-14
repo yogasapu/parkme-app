@@ -1,9 +1,9 @@
 {
   "name": "parkme-app",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "axios": "^1.9.0",

@@ -51,6 +51,50 @@ app.post('/create-qris', async (req, res) => {
     }
 });
 
+app.post('/create-va', async (req, res) => {
+    const { amount, bank } = req.body;  // Mengambil jumlah dan bank dari request body
+    const orderId = 'ORDER-' + Date.now();
+
+    const data = {
+        payment_type: 'va',
+        transaction_details: {
+            order_id: orderId,
+            gross_amount: amount
+        },
+        bank_transfer: {
+            bank: bank  // Pilihan bank yang akan digunakan (misalnya 'bca', 'mandiri', 'bni', dll)
+        }
+    };
+
+    try {
+        // Mengirim request ke API Midtrans untuk membuat transaksi VA
+        const response = await axios.post(MIDTRANS_API_URL, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Basic ' + Buffer.from(MIDTRANS_SERVER_KEY + ':').toString('base64')
+            }
+        });
+
+        // Mengirimkan respons dengan URL untuk melakukan pembayaran
+        res.json({
+            success: true,
+            order_id: orderId,
+            va_number: response.data.va_numbers[0]?.va_number, // Nomor VA yang dapat digunakan untuk pembayaran
+            transaction_data: response.data
+        });
+    } catch (error) {
+        // Menangani error
+        console.error(error.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Gagal membuat Virtual Account',
+            error: error.response?.data || error.message
+        });
+    }
+});
+
+
 app.get('/check-status/:order_id', async (req, res) => {
     const { order_id } = req.params;
     try {
